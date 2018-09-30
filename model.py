@@ -5,15 +5,17 @@ from skimage.feature import hog
 
 import features
 
-images = glob.glob('data/small/**/*.jpeg', recursive=True)
-print(len(images))
-cars = []
-notcars = []
-for image in images:
-    if 'image' in image or 'extra' in image:
-        notcars.append(image)
-    else:
-        cars.append(image)
+# cars = glob.glob('data/small/vehicles_smallset/**/*.jpeg', recursive=True)
+# notcars = glob.glob('data/small/non-vehicles_smallset/**/*.jpeg', recursive=True)
+train_image_format = "jpeg"
+
+cars = glob.glob('data/full/vehicles/**/*.png', recursive=True)
+notcars = glob.glob('data/full/non-vehicles/**/*.png', recursive=True)
+train_image_format = "png"
+
+print("car_images=",len(cars))
+print("notcar_images=", len(notcars))
+
 
 # car_features = extract_features(cars, cspace='RGB', spatial_size=(32, 32),
 #                                 hist_bins=32, hist_range=(0, 256))
@@ -59,11 +61,11 @@ from sklearn.model_selection import train_test_split
 
 # TODO play with these values to see how your classifier
 # performs under different binning scenarios
-color_space = 'RGB2YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+colorspace = 'RGB2YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8  # HOG pixels per cell
 cell_per_block = 2  # HOG cells per block
-hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
+hog_channel = 0  # Can be 0, 1, 2, or "ALL"
 spatial_size = (32, 32)  # Spatial binning dimensions
 hist_bins = 32  # Number of histogram bins
 spatial_feat = True  # Spatial features on or off
@@ -71,13 +73,13 @@ hist_feat = True  # Histogram features on or off
 hog_feat = True  # HOG features on or off
 y_start_stop = [None, None]  # Min and max in y to search in slide_window()
 
-car_features = features.extract_features(cars, color_space=color_space,
+car_features = features.extract_features(cars, color_space=colorspace,
                                 spatial_size=spatial_size, hist_bins=hist_bins,
                                 orient=orient, pix_per_cell=pix_per_cell,
                                 cell_per_block=cell_per_block,
                                 hog_channel=hog_channel, spatial_feat=spatial_feat,
                                 hist_feat=hist_feat, hog_feat=hog_feat)
-notcar_features = features.extract_features(notcars, color_space=color_space,
+notcar_features = features.extract_features(notcars, color_space=colorspace,
                                    spatial_size=spatial_size, hist_bins=hist_bins,
                                    orient=orient, pix_per_cell=pix_per_cell,
                                    cell_per_block=cell_per_block,
@@ -124,7 +126,6 @@ print(round(t2 - t, 5), 'Seconds to predict', n_predict, 'labels with SVC')
 model = {
     "svc": svc,
     "scaler": X_scaler,
-    "color_space": color_space,
     "orient": orient,
     "pix_per_cell": pix_per_cell,  # HOG pixels per cell
     "cell_per_block": cell_per_block,  # HOG cells per block
@@ -134,7 +135,9 @@ model = {
     "spatial_feat": spatial_feat,  # Spatial features on or off
     "hist_feat": hist_feat,  # Histogram features on or off
     "hog_feat": hog_feat,  # HOG features on or off
+    "train_image_format": train_image_format,
+    "colorspace": colorspace,
+    "hog_channel": hog_channel,
 }
-
 filename = "svc.sav"
 pickle.dump(model, open(filename, 'wb'))
