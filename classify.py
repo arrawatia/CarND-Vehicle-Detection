@@ -103,7 +103,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
     window = 64
     nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
-    cells_per_step = 2  # Instead of overlap, define how many cells to step
+    cells_per_step = 4  # Instead of overlap, define how many cells to step
     nxsteps = (nxblocks - nblocks_per_window) // cells_per_step + 1
     nysteps = (nyblocks - nblocks_per_window) // cells_per_step + 1
 
@@ -115,7 +115,6 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 
     else:
         hog1 = features.get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
-
 
     # import time
     #
@@ -277,7 +276,6 @@ def weighted_average(points, weights):
 def process_frame(img):
     # Window searching
 
-
     # import time
     #
     # start_p = time.time()
@@ -313,13 +311,18 @@ def process_frame(img):
     return heat_img
 
 
-from moviepy.editor import VideoFileClip
+def movie(file, output_path="output_videos", subclip=None):
+    from moviepy.editor import VideoFileClip
 
-output_path = "output_videos"
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
-if not os.path.exists(output_path):
-    os.makedirs(output_path)
-output = 'output_videos/project_video.mp4'
-clip = VideoFileClip("project_video.mp4").subclip(10,15)
-white_clip = clip.fl_image(process_frame)
-white_clip.write_videofile(output, audio=False)
+    output = 'output_videos/%s' % file
+    clip = VideoFileClip(file)
+    if subclip is not None:
+        clip = clip.subclip(subclip)
+    processed_clip = clip.fl_image(process_frame)
+    processed_clip.write_videofile(output, audio=False)
+
+movie("test_video.mp4")
+movie("project_video.mp4")
