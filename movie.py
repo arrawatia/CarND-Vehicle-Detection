@@ -31,6 +31,11 @@ heat_map_q = deque(np.array([np.zeros(img_size).astype(np.float)]), maxlen=bins)
 def weighted_average(points, weights):
     return np.average(points, 0, weights[-len(points):])
 
+def process_frame_svm(img):
+    return process_frame(img, svc)
+
+def process_frame_rf(img):
+    return process_frame(img, rf)
 
 def process_frame(img, model):
     # Window searching
@@ -81,8 +86,8 @@ def movie(file, output_path="output_videos", subclip=None, start=0):
 
         segment_length = subclip
 
-        clips = []
-
+        clips_rf = []
+        clips_svc = []
         # the first segment starts at 0 seconds
         clip_start = start
 
@@ -97,20 +102,24 @@ def movie(file, output_path="output_videos", subclip=None, start=0):
 
             # create a new moviepy videoclip, and add it to our clips list
             clip = original_video.subclip(clip_start, clip_end)
-            processed_clip = clip.fl_image(process_frame, rf)
+            processed_clip = clip.fl_image(process_frame_rf)
             processed_clip.write_videofile('output_videos/%s-%s-%s-%s' % ("rf", clip_start, clip_end, file),
                                            audio=False)
+            clips_rf.append(clip)
 
-            processed_clip = clip.fl_image(process_frame, svc)
+            processed_clip = clip.fl_image(process_frame_svm)
             processed_clip.write_videofile('output_videos/%s-%s-%s-%s' % ("svc", clip_start, clip_end, file),
                                            audio=False)
+            clips_svc.append(clip)
 
-            clips.append(clip)
 
             clip_start = clip_end
 
-        final_video = mp.concatenate_videoclips(clips)
-        final_video.write_videofile('output_videos/%s' % (file), audio=False)
+        final_video_rf = mp.concatenate_videoclips(clips_rf)
+        final_video_rf.write_videofile('output_videos/rf-%s' % (file), audio=False)
+
+        final_video_svc = mp.concatenate_videoclips(clips_svc)
+        final_video_svc.write_videofile('output_videos/rf-%s' % (file), audio=False)
 
     else:
         processed_clip = original_video.fl_image(process_frame)
@@ -118,4 +127,4 @@ def movie(file, output_path="output_videos", subclip=None, start=0):
 
 
 # movie("test_video.mp4", subclip = .5)
-movie("project_video.mp4", subclip=.10)
+movie("project_video.mp4", subclip=1)
