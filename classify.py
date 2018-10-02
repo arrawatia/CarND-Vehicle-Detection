@@ -1,3 +1,7 @@
+import matplotlib
+
+matplotlib.use('Agg')
+
 import glob
 import os
 import pickle
@@ -187,13 +191,12 @@ def process_image(img, scaler, model, config):
 
 def main():
     dist_pickle = pickle.load(open("svc.sav", "rb"))
-    print(dist_pickle)
+    import pprint
+    pprint.pprint(dist_pickle)
 
     svc = dist_pickle["svc"]
     scaler = dist_pickle["scaler"]
     config = dist_pickle["config"]
-
-    img = mpimg.imread("./test_images/test1.jpg")
 
     config["y_start"] = 400  # Min and max in y to search in slide_window()
     config["y_stop"] = 656  # Min and max in y to search in slide_window()
@@ -215,7 +218,7 @@ def main():
         print(lane_image)
         image = read_image(lane_image)
 
-        boxes = find_cars(img, scaler, svc, config)
+        boxes = find_cars(image, scaler, svc, config)
 
         plt.imsave("%s/%s" % (output_path, os.path.basename(lane_image)), process_image(image, scaler, svc, config))
 
@@ -239,6 +242,7 @@ def main():
         plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
 
         plt.savefig("%s/%s" % (output_path_plots, os.path.basename(lane_image)))
+
 
 if __name__ == '__main__':
     main()
