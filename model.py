@@ -16,8 +16,8 @@ def load_data():
     # notcars = glob.glob('data/small/non-vehicles_smallset/**/*.jpeg', recursive=True)
     # train_image_format = "jpeg"
 
-    cars = glob.glob('data/full/vehicles/**/*.png', recursive=True)[0:100]
-    notcars = glob.glob('data/full/non-vehicles/**/*.png', recursive=True)[0:100]
+    cars = glob.glob('data/full/vehicles/**/*.png', recursive=True)
+    notcars = glob.glob('data/full/non-vehicles/**/*.png', recursive=True)
 
     print("car_images=", len(cars))
     print("notcar_images=", len(notcars))
