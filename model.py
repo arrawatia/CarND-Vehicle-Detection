@@ -61,7 +61,7 @@ from sklearn.model_selection import train_test_split
 
 # TODO play with these values to see how your classifier
 # performs under different binning scenarios
-colorspace = 'RGB2YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+colorspace = 'YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8  # HOG pixels per cell
 cell_per_block = 2  # HOG cells per block

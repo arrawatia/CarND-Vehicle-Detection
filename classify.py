@@ -69,6 +69,7 @@ def draw_labeled_bboxes(img, labels):
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins,
+              window,
               train_image_format, colorspace, hog_channel):
     boxes = []
 
@@ -101,7 +102,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     nfeat_per_block = orient * cell_per_block ** 2
 
     # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
-    window = 64
+    window = window
     nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
     cells_per_step = 4  # Instead of overlap, define how many cells to step
     nxsteps = (nxblocks - nblocks_per_window) // cells_per_step + 1
@@ -219,6 +220,74 @@ def process_image(img):
     return heat_img
 
 
+# Multi Sliding Search
+def multi_window(img):
+    # Window 1 characteristics
+    ystart = 400
+    ystop = 700
+    scale = 1.
+    pix_per_cell = 40
+    window = 320
+
+    # Window searching
+    box_list1 = find_cars(img, ystart, ystop, scale, svc, X_scaler,
+                          orient, pix_per_cell, cell_per_block,
+                          spatial_size,
+                          hist_bins,
+                          window, train_image_format, colorspace, hog_channel)
+
+    # Window 2 characteristics
+    ystart = 380
+    ystop = 620
+    scale = 1.
+    pix_per_cell = (30, 20)
+    window = (240, 160)
+
+    # Window searching
+    box_list2 = find_cars(img, ystart, ystop, scale, svc, X_scaler,
+                          orient, pix_per_cell, cell_per_block,
+                          spatial_size,
+                          hist_bins,
+                          window, train_image_format, colorspace, hog_channel)
+
+    box_list1.extend(box_list2)
+
+    # Window 3 characteristics
+    ystart = 380
+    ystop = 536
+    scale = 1.
+    pix_per_cell = 20, 13
+    window = 160
+
+    # Window searching
+    box_list3 = find_cars(img, ystart, ystop, scale, svc, X_scaler,
+                          orient, pix_per_cell, cell_per_block,
+                          spatial_size,
+                          hist_bins,
+                          window, train_image_format, colorspace, hog_channel)
+
+    box_list1.extend(box_list3)
+
+    # Window 4 characteristics
+    ystart = 400
+    ystop = 490
+    scale = 1.
+    pix_per_cell = 10
+    window = 80
+
+    # Window searching
+    box_list4 = find_cars(img, ystart, ystop, scale, svc, X_scaler,
+                          orient, pix_per_cell, cell_per_block,
+                          spatial_size,
+                          hist_bins,
+                          window, train_image_format, colorspace, hog_channel)
+
+    box_list1.extend(box_list4)
+
+    # Return bounding boxes
+    return box_list1
+
+
 import os
 
 # * Apply a distortion correction to raw images.
@@ -236,9 +305,9 @@ for lane_image in lane_images:
     print(lane_image)
     image = read_image(lane_image)
 
-    boxes = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
-                      hist_bins, train_image_format, colorspace, hog_channel)
-
+    # boxes = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
+    #                  hist_bins, train_image_format, colorspace, hog_channel)
+    boxes = multi_window(img)
     plt.imsave("%s/%s" % (output_path, os.path.basename(lane_image)), process_image(image))
 
     # Plot the result
@@ -324,5 +393,7 @@ def movie(file, output_path="output_videos", subclip=None):
     processed_clip = clip.fl_image(process_frame)
     processed_clip.write_videofile(output, audio=False)
 
+
 movie("test_video.mp4")
 movie("project_video.mp4")
+
