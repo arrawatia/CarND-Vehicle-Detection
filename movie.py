@@ -1,11 +1,16 @@
 from collections import deque
 
 from classify import *
+from moviepy.editor import VideoFileClip
+import moviepy.editor as mp
+
 
 dist_pickle = pickle.load(open("svc.sav", "rb"))
 print(dist_pickle)
 
-svc = dist_pickle["svc"]
+# svc = dist_pickle["svc"]
+model = dist_pickle["rf"]
+
 scaler = dist_pickle["scaler"]
 config = dist_pickle["config"]
 
@@ -34,7 +39,7 @@ def process_frame(img):
     #
     # start_p = time.time()
 
-    boxes = find_cars(img, scaler, svc, config)
+    boxes = find_cars(img, scaler, model, config)
     # Heat mapping
     # print("find cars = ", time.time() - start_p)
     heat = np.zeros_like(img[:, :, 0]).astype(np.float)
@@ -65,17 +70,49 @@ def process_frame(img):
 
 
 def movie(file, output_path="output_videos", subclip=None):
-    from moviepy.editor import VideoFileClip
+
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    output = 'output_videos/%s' % file
-    clip = VideoFileClip(file)
+    original_video = VideoFileClip(file)
+    print("segment_length=", subclip)
+    print("duration=", original_video.duration)
     if subclip is not None:
-        clip = clip.subclip(subclip)
-    processed_clip = clip.fl_image(process_frame)
-    processed_clip.write_videofile(output, audio=False)
+        duration = original_video.duration
 
-movie("test_video.mp4")
-# movie("project_video.mp4")
+        segment_length = subclip
+
+        clips = []
+
+        # the first segment starts at 0 seconds
+        clip_start = 0
+
+        # make new segments as long as clip_start is
+        # less than the duration of the video
+        while clip_start < duration:
+            clip_end = clip_start + segment_length
+
+            # make sure the the end of the clip doesn't exceed the length of the original video
+            if clip_end > duration:
+                clip_end = duration
+
+            # create a new moviepy videoclip, and add it to our clips list
+            clip = original_video.subclip(clip_start, clip_end)
+            processed_clip = clip.fl_image(process_frame)
+            processed_clip.write_videofile('output_videos/%s-%s-%s' % (clip_start, clip_end, file), audio=False)
+
+            clips.append(clip)
+
+            clip_start = clip_end
+
+        final_video = mp.concatenate_videoclips(clips)
+        final_video.write_videofile('output_videos/%s' % (file), audio=False)
+
+    else:
+        processed_clip = original_video.fl_image(process_frame)
+        processed_clip.write_videofile('output_videos/%s' % (file), audio=False)
+
+
+# movie("test_video.mp4", subclip = .5)
+movie("project_video.mp4", subclip = .5)
