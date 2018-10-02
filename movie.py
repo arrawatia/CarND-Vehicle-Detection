@@ -1,15 +1,15 @@
 from collections import deque
 
-from classify import *
-from moviepy.editor import VideoFileClip
 import moviepy.editor as mp
+from moviepy.editor import VideoFileClip
 
+from classify import *
 
 dist_pickle = pickle.load(open("svc.sav", "rb"))
 print(dist_pickle)
 
-# svc = dist_pickle["svc"]
-model = dist_pickle["rf"]
+svc = dist_pickle["svc"]
+rf = dist_pickle["rf"]
 
 scaler = dist_pickle["scaler"]
 config = dist_pickle["config"]
@@ -32,7 +32,7 @@ def weighted_average(points, weights):
     return np.average(points, 0, weights[-len(points):])
 
 
-def process_frame(img):
+def process_frame(img, model):
     # Window searching
 
     # import time
@@ -69,9 +69,7 @@ def process_frame(img):
     return heat_img
 
 
-def movie(file, output_path="output_videos", subclip=None):
-
-
+def movie(file, output_path="output_videos", subclip=None, start=0):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -86,7 +84,7 @@ def movie(file, output_path="output_videos", subclip=None):
         clips = []
 
         # the first segment starts at 0 seconds
-        clip_start = 0
+        clip_start = start
 
         # make new segments as long as clip_start is
         # less than the duration of the video
@@ -99,8 +97,13 @@ def movie(file, output_path="output_videos", subclip=None):
 
             # create a new moviepy videoclip, and add it to our clips list
             clip = original_video.subclip(clip_start, clip_end)
-            processed_clip = clip.fl_image(process_frame)
-            processed_clip.write_videofile('output_videos/%s-%s-%s' % (clip_start, clip_end, file), audio=False)
+            processed_clip = clip.fl_image(process_frame, rf)
+            processed_clip.write_videofile('output_videos/%s-%s-%s-%s' % ("rf", clip_start, clip_end, file),
+                                           audio=False)
+
+            processed_clip = clip.fl_image(process_frame, svc)
+            processed_clip.write_videofile('output_videos/%s-%s-%s-%s' % ("svc", clip_start, clip_end, file),
+                                           audio=False)
 
             clips.append(clip)
 
@@ -115,4 +118,4 @@ def movie(file, output_path="output_videos", subclip=None):
 
 
 # movie("test_video.mp4", subclip = .5)
-movie("project_video.mp4", subclip = .5)
+movie("project_video.mp4", subclip=.10)
