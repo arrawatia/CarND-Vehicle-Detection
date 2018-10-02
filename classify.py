@@ -239,3 +239,6 @@ def main():
         plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
 
         plt.savefig("%s/%s" % (output_path_plots, os.path.basename(lane_image)))
+
+if __name__ == '__main__':
+    main()
