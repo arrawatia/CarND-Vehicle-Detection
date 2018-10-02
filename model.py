@@ -151,7 +151,7 @@ def main():
     rf = train_rf(config, X_train, X_test, y_train, y_test)
     model = {
         "svc": svc,
-        "svc": rf,
+        "rf": rf,
         "scaler": X_scaler,
         "config": config
     }

@@ -195,6 +195,9 @@ def main():
     pprint.pprint(dist_pickle)
 
     svc = dist_pickle["svc"]
+    rf = dist_pickle["rf"]
+
+    model = rf
     scaler = dist_pickle["scaler"]
     config = dist_pickle["config"]
 
@@ -218,9 +221,9 @@ def main():
         print(lane_image)
         image = read_image(lane_image)
 
-        boxes = find_cars(image, scaler, svc, config)
+        boxes = find_cars(image, scaler, model, config)
 
-        plt.imsave("%s/%s" % (output_path, os.path.basename(lane_image)), process_image(image, scaler, svc, config))
+        plt.imsave("%s/%s" % (output_path, os.path.basename(lane_image)), process_image(image, scaler, model, config))
 
         # Plot the result
         draw_img = np.copy(image)
