@@ -206,7 +206,6 @@ def main():
     config["scale"] = 1.5
     config["threshold"] = 1
 
-    # * Apply a distortion correction to raw images.
     lane_images = glob.glob('test_images/*.jpg')
 
     output_path = "output_images"

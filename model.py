@@ -133,7 +133,7 @@ def train_rf(config, X_train, X_test, y_train, y_test):
 def main():
     config = {
         # performs under different binning scenarios
-        "colorspace": 'RGB2YCrCb',
+        "colorspace": 'COLOR_BGR2HSV',
         "orient": 9,  # HOG orientations
         "pix_per_cell": 8,  # HOG pixels per cell
         "cell_per_block": 2,  # HOG cells per block
