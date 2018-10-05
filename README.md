@@ -126,7 +126,7 @@ The rest of the plots are here: [search plots](output_images/plots)
 I used both classifiers and here are the resulting videos. Based on a suggestion from one of fellow students, I used weighted averaging of detections over the last 10 windows. It made the video processing smooth and accurate.
 
 1. [SVM](output_videos/svc-project_video.mp4)
-2. [Random Forest](output_videos/svc-project_video.mp4)
+2. [Random Forest](output_videos/rf-project_video.mp4)
 
 The code that processes video is here : [movie.py](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/movie.py)
 
