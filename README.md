@@ -26,7 +26,7 @@ I started by loading the `vehicle` and `non-vehicle` images. An example of a ran
 
 The code that loads the data is here: [features.py L155-L156](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L155-L156)
 
-#### Color Spaces
+### Color Spaces
 I then explored different color spaces on a random subset of images from both `vehicle` and `non-vehicle` classes and settled on the **HSV** color space. This colorspace had the best separation of colors along the **H** axis.
 
 An example of the plots for an image is shown below.
@@ -37,7 +37,7 @@ The rest of the plots are here: [colorspace plots](output_images/plots/colorspac
 
 The code that transforms the colorspace is here [features.py L5-L13](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L5-L13) and the code that produces the plots is here `features.py` [L120-L145](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L120-L145) [L187-L249](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L187-L249).
 
-#### Channel Histograms
+### Channel Histograms
 
 I then looked at the distribution of pixel colors by plotting the channel histograms to get a color **signature** of the cars. I looked at the histograms for a sample of cars and non-cars. I also plotted the histograms for the test images.
 
@@ -48,7 +48,7 @@ The rest of the plots are here: [histogram plots](output_images/plots/hist)
 
 The code that computes the histogram is here: [features.py L45-L53](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L45-L53) and the code that produces the plots is here [features.py L252-L275](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L252-L275).
 
-#### Spatial binning
+### Spatial binning
 
 Spatial binning allows us tp collect the image pixels in a feature vector. It is inefficient to include all three color channels of a full resolution image.  Spatial binning lumps close pixels together to form a lower resolution image. This image is then flattened into an vector.
 
@@ -60,7 +60,7 @@ The rest of the plots are here: [spatial binning plots](output_images/plots/spat
 The code that performs the spatial binning is here: [features.py L38-L42](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L38-L42) and the code that produces the plots is here [features.py L277-L294](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L277-L294).
 
 
-#### HOG
+### HOG
 
 The gradients in a specific direction in reference to the center of the object image will give us the **shape** signature of objec.
 
@@ -73,7 +73,7 @@ An example of HOG feattures on one of the test images using HOG parameters of `o
 
 The rest of the plots are here: [HOG plots](output_images/plots/hog)
 
-The code that performs the spatial binning is here: [features.py L16-L35](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L16-L35) and the code that produces the plots is here [features.py L296-L332](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L296-L332).
+The code that calculates the HOG features is here: [features.py L16-L35](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L16-L35) and the code that produces the plots is here [features.py L296-L332](https://github.com/arrawatia/CarND-Vehicle-Detection/blob/master/features.py#L296-L332).
 
 
 
